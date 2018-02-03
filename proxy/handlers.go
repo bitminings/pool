@@ -5,8 +5,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/sammy007/open-ethereum-pool/rpc"
-	"github.com/sammy007/open-ethereum-pool/util"
+	"github.com/ethersocial/ethersocial-pool/rpc"
+	"github.com/ethersocial/ethersocial-pool/util"
 )
 
 // Allow only lowercase hexadecimal with 0x prefix
@@ -104,6 +104,12 @@ func (s *ProxyServer) handleGetBlockByNumberRPC() *rpc.GetBlockReplyPart {
 
 func (s *ProxyServer) handleUnknownRPC(cs *Session, m string) *ErrorReply {
 	log.Printf("Unknown request method %s from %s", m, cs.ip)
+	s.policy.ApplyMalformedPolicy(cs.ip)
+	return &ErrorReply{Code: -3, Message: "Method not found"}
+}
+// ESC EDIT
+func (s *ProxyServer) handleUnknownRPCstratum(cs *Session, m string) *ErrorReply {
+	log.Printf("Unknown request method stratum %s from %s", m, cs.ip)
 	s.policy.ApplyMalformedPolicy(cs.ip)
 	return &ErrorReply{Code: -3, Message: "Method not found"}
 }
